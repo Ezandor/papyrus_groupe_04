@@ -2,8 +2,10 @@ package com.sci.papyrus.service;
 
 import com.sci.papyrus.common.DuplicateResourceException;
 import com.sci.papyrus.dto.BookDTO;
+import com.sci.papyrus.dto.UpdateBookDTO;
 import com.sci.papyrus.entity.Book;
 import com.sci.papyrus.repository.BookRepository;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,6 +58,15 @@ public class BookService {
 
     public  void deleteBook(Long id) {
         repository.deleteById(id);
+    }
+
+    public Book updateById(Long id, UpdateBookDTO updateBookDTO) throws ChangeSetPersister.NotFoundException {
+        Book bookToUpdate = repository.findById(id)
+                .orElseThrow(ChangeSetPersister.NotFoundException::new);
+        bookToUpdate.setIsbn(updateBookDTO.getIsbn());
+        bookToUpdate.setTitle(updateBookDTO.getTitle());
+        bookToUpdate.setAuthor(updateBookDTO.getAuthor());
+        return repository.save(bookToUpdate);
     }
 
 }

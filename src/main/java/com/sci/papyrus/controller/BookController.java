@@ -1,7 +1,11 @@
 package com.sci.papyrus.controller;
 
 import com.sci.papyrus.dto.BookDTO;
+import com.sci.papyrus.dto.UpdateBookDTO;
+import com.sci.papyrus.entity.Book;
 import com.sci.papyrus.service.BookService;
+import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,4 +34,17 @@ public class BookController {
     public void deleteBook(@PathVariable Long id) {
         bookService.deleteBook(id);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BookDTO> updateBook(@PathVariable Long id, @RequestBody UpdateBookDTO updateBookDTO) throws ChangeSetPersister.NotFoundException {
+        Book updatedBook = bookService.updateById(id, updateBookDTO);
+        BookDTO bookDTO = BookDTO.builder()
+                .id(updatedBook.getId())
+                .isbn(updatedBook.getIsbn())
+                .title(updatedBook.getTitle())
+                .author(updatedBook.getAuthor())
+                .build();
+        return ResponseEntity.ok().body(bookDTO);
+    }
+
 }
